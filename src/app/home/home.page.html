@@ -1,0 +1,133 @@
+
+<ion-header class="ion-no-border">
+  <ion-toolbar color="light">
+    <ion-title>Minhas Tarefas</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content class="ion-padding">
+
+  <!-- Boas-vindas -->
+  <div class="welcome">
+    <h1>Bom dia! 👋</h1>
+    <p>Organize seu dia e alcance seus objetivos.</p>
+  </div>
+
+  <!-- Progresso -->
+  <ion-card class="progress-card">
+    <ion-card-content>
+      <h2>Seu progresso</h2>
+      <h1>{{ progresso }}%</h1>
+
+      <ion-progress-bar
+        [value]="progresso / 100"
+        color="success">
+      </ion-progress-bar>
+
+      <p>
+        {{ concluidas }} de {{ tarefas.length }}
+        tarefas concluídas
+      </p>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Categorias -->
+  <h2>Categorias</h2>
+
+  <div class="categories">
+    <ion-chip
+      *ngFor="let categoria of categorias"
+      [color]="filtro === categoria ? 'primary' : 'medium'"
+      (click)="filtrar(categoria)">
+      {{ categoria }}
+    </ion-chip>
+  </div>
+
+  <!-- Foco principal -->
+  <h2>⭐ Foco Principal</h2>
+
+  <ion-card>
+    <ion-card-content>
+
+      <ion-item *ngFor="let tarefa of tarefasFoco">
+
+        <ion-checkbox
+          slot="start"
+          [checked]="tarefa.concluida"
+          (ionChange)="alternar(tarefa)">
+        </ion-checkbox>
+
+        <ion-label>
+          <h2 [class.concluida]="tarefa.concluida">
+            {{ tarefa.titulo }}
+          </h2>
+        </ion-label>
+
+      </ion-item>
+
+      <p *ngIf="tarefasFoco.length === 0">
+        Nenhuma tarefa prioritária selecionada.
+      </p>
+
+    </ion-card-content>
+  </ion-card>
+
+  <!-- Minhas atividades -->
+  <div class="section-title">
+    <h2>Minhas atividades</h2>
+  </div>
+
+  <ion-card *ngFor="let tarefa of tarefasFiltradas">
+
+    <ion-item>
+
+      <ion-checkbox
+        slot="start"
+        [checked]="tarefa.concluida"
+        (ionChange)="alternar(tarefa)">
+      </ion-checkbox>
+
+      <ion-label>
+        <h2 [class.concluida]="tarefa.concluida">
+          {{ tarefa.titulo }}
+        </h2>
+
+        <p>
+          {{ tarefa.categoria }} · {{ tarefa.prioridade }}
+        </p>
+      </ion-label>
+
+      <ion-badge [color]="corPrioridade(tarefa.prioridade)">
+        {{ tarefa.prioridade }}
+      </ion-badge>
+
+      <ion-button
+        fill="clear"
+        color="danger"
+        (click)="remover(tarefa.id)">
+        <ion-icon name="trash-outline"></ion-icon>
+      </ion-button>
+
+    </ion-item>
+
+  </ion-card>
+
+  <!-- Estado vazio -->
+  <div class="empty" *ngIf="tarefasFiltradas.length === 0">
+    <ion-icon name="clipboard-outline"></ion-icon>
+    <p>Nenhuma tarefa encontrada.</p>
+  </div>
+
+  <!-- Botão flutuante -->
+  <ion-fab
+    slot="fixed"
+    vertical="bottom"
+    horizontal="end">
+
+    <ion-fab-button (click)="abrirCadastro()">
+      <ion-icon name="add-outline"></ion-icon>
+    </ion-fab-button>
+
+  </ion-fab>
+
+</ion-content>
