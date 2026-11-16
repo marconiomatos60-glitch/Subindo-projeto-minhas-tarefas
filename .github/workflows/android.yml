@@ -12,6 +12,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '21'
+      - uses: android-actions/setup-android@v3
       - run: npm install --legacy-peer-deps
       - run: npx ionic build
       - run: npx cap copy android
