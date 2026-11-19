@@ -1,270 +1,222 @@
+import { Component, OnInit } from '@angular/core';
 
-import { Component } from '@angular/core';
-import { AlertController } from '@ionic/angular';
-
-interface Tarefa {
+export interface Tarefa {
   id: number;
   titulo: string;
-  categoria: string;
-  prioridade: string;
+  categoria: 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos';
+  prioridade: 'Alta' | 'Média' | 'Baixa';
   concluida: boolean;
-  foco: boolean;
+  foco?: boolean;
 }
 
 @Component({
   selector: 'app-home',
-  templateUrl: './home.page.html',
-  styleUrls: ['./home.page.scss'],
-  standalone: false
+  templateUrl: 'home.page.html',
+  styleUrls: ['home.page.scss'],
+  standalone: false,
 })
-export class HomePage {
+export class HomePage implements OnInit {
+  private readonly storageKey = 'minhas_tarefas_exemplo_v1';
 
-  categorias = ['Todas', 'Trabalho', 'Casa', 'Saúde', 'Estudos'];
+  categorias: Array<'Todas' | 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos'> = [
+    'Todas',
+    'Trabalho',
+    'Casa',
+    'Saúde',
+    'Estudos',
+  ];
 
-  filtro = 'Todas';
+  filtro: 'Todas' | 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos' = 'Todas';
 
   tarefas: Tarefa[] = [
     {
-      id: 1,
-      titulo: 'Revisar e-mails',
+      id: 101,
+      titulo: 'Enviar relatório semanal para a equipa',
       categoria: 'Trabalho',
       prioridade: 'Alta',
       concluida: false,
-      foco: true
+      foco: true,
     },
     {
-      id: 2,
-      titulo: 'Pagar contas',
+      id: 102,
+      titulo: 'Organizar atendimento e orçamentos',
+      categoria: 'Trabalho',
+      prioridade: 'Média',
+      concluida: false,
+    },
+    {
+      id: 201,
+      titulo: 'Pagar conta de água e luz',
+      categoria: 'Casa',
+      prioridade: 'Alta',
+      concluida: false,
+      foco: true,
+    },
+    {
+      id: 202,
+      titulo: 'Fazer compras da semana e arrumar a casa',
       categoria: 'Casa',
       prioridade: 'Média',
       concluida: false,
-      foco: false
     },
     {
-      id: 3,
-      titulo: 'Treino 45 minutos',
+      id: 301,
+      titulo: 'Beber 2 litros de água ao longo do dia',
       categoria: 'Saúde',
       prioridade: 'Alta',
       concluida: false,
-      foco: true
+      foco: true,
     },
     {
-      id: 4,
-      titulo: 'Ler 15 páginas',
-      categoria: 'Estudos',
+      id: 302,
+      titulo: 'Caminhada leve de 30 minutos ao fim da tarde',
+      categoria: 'Saúde',
       prioridade: 'Baixa',
       concluida: false,
-      foco: true
-    }
+    },
+    {
+      id: 401,
+      titulo: 'Praticar componentes e rotas no Ionic / Angular',
+      categoria: 'Estudos',
+      prioridade: 'Alta',
+      concluida: false,
+      foco: true,
+    },
+    {
+      id: 402,
+      titulo: 'Rever exercícios e anotações das aulas',
+      categoria: 'Estudos',
+      prioridade: 'Média',
+      concluida: false,
+    },
   ];
 
-  constructor(private alertController: AlertController) {
+  ngOnInit(): void {
     this.carregarTarefas();
   }
 
   get concluidas(): number {
-    return this.tarefas.filter(t => t.concluida).length;
+    return this.tarefas.filter((t) => t.concluida).length;
   }
 
   get progresso(): number {
-    if (this.tarefas.length === 0) return 0;
-
-    return Math.round(
-      (this.concluidas / this.tarefas.length) * 100
-    );
+    if (this.tarefas.length === 0) {
+      return 0;
+    }
+    return Math.round((this.concluidas / this.tarefas.length) * 100);
   }
 
   get tarefasFoco(): Tarefa[] {
-    return this.tarefas.filter(t => t.foco).slice(0, 3);
+    return this.tarefas.filter((t) => t.foco);
   }
 
   get tarefasFiltradas(): Tarefa[] {
     if (this.filtro === 'Todas') {
       return this.tarefas;
     }
-
-    return this.tarefas.filter(
-      t => t.categoria === this.filtro
-    );
+    return this.tarefas.filter((t) => t.categoria === this.filtro);
   }
 
-  filtrar(categoria: string) {
+  filtrar(categoria: 'Todas' | 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos'): void {
     this.filtro = categoria;
   }
 
-  alternar(tarefa: Tarefa) {
+  alternar(tarefa: Tarefa): void {
     tarefa.concluida = !tarefa.concluida;
     this.salvarTarefas();
   }
 
   corPrioridade(prioridade: string): string {
     switch (prioridade) {
-      case 'Alta': return 'danger';
-      case 'Média': return 'warning';
-      default: return 'success';
+      case 'Alta':
+        return 'danger';
+      case 'Média':
+        return 'warning';
+      case 'Baixa':
+        return 'success';
+      default:
+        return 'medium';
     }
   }
 
-  async abrirCadastro() {
-    const alert = await this.alertController.create({
-      header: 'Nova tarefa',
-      inputs: [
-        {
-          name: 'titulo',
-          type: 'text',
-          placeholder: 'Nome da tarefa'
-        }
-      ],
-      buttons: [
-        {
-          text: 'Cancelar',
-          role: 'cancel'
-        },
-        {
-          text: 'Continuar',
-          handler: (dados) => {
-            if (!dados.titulo?.trim()) return false;
-
-            this.selecionarDetalhes(dados.titulo.trim());
-            return true;
-          }
-        }
-      ]
-    });
-
-    await alert.present();
+  remover(id: number): void {
+    this.tarefas = this.tarefas.filter((t) => t.id !== id);
+    this.salvarTarefas();
   }
 
-  async selecionarDetalhes(titulo: string) {
-    const alert = await this.alertController.create({
-      header: 'Detalhes da tarefa',
-      inputs: [
-        {
-          name: 'categoria',
-          type: 'radio',
-          label: 'Trabalho',
-          value: 'Trabalho',
-          checked: true
-        },
-        {
-          name: 'categoria',
-          type: 'radio',
-          label: 'Casa',
-          value: 'Casa'
-        },
-        {
-          name: 'categoria',
-          type: 'radio',
-          label: 'Saúde',
-          value: 'Saúde'
-        },
-        {
-          name: 'categoria',
-          type: 'radio',
-          label: 'Estudos',
-          value: 'Estudos'
-        }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Próximo',
-          handler: (categoria) => {
-            this.selecionarPrioridade(titulo, categoria);
-          }
-        }
-      ]
-    });
-
-    await alert.present();
+  restaurarExemplos(): void {
+    localStorage.removeItem(this.storageKey);
+    window.location.reload();
   }
 
-  async selecionarPrioridade(
-    titulo: string,
-    categoria: string
-  ) {
-    const alert = await this.alertController.create({
-      header: 'Prioridade',
-      inputs: [
-        {
-          name: 'prioridade',
-          type: 'radio',
-          label: 'Alta',
-          value: 'Alta'
-        },
-        {
-          name: 'prioridade',
-          type: 'radio',
-          label: 'Média',
-          value: 'Média',
-          checked: true
-        },
-        {
-          name: 'prioridade',
-          type: 'radio',
-          label: 'Baixa',
-          value: 'Baixa'
-        }
-      ],
-      buttons: [
-        { text: 'Cancelar', role: 'cancel' },
-        {
-          text: 'Salvar',
-          handler: (prioridade) => {
-            this.adicionarTarefa(
-              titulo,
-              categoria,
-              prioridade
-            );
-          }
-        }
-      ]
-    });
+  abrirCadastro(): void {
+    const titulo = window.prompt('Título da nova tarefa:');
+    if (!titulo || !titulo.trim()) {
+      return;
+    }
 
-    await alert.present();
-  }
+    const categoriaPadrao: 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos' =
+      this.filtro !== 'Todas' ? this.filtro : 'Estudos';
 
-  adicionarTarefa(
-    titulo: string,
-    categoria: string,
-    prioridade: string
-  ) {
-    const tarefa: Tarefa = {
+    const categoriaInput = window.prompt(
+      'Categoria (Trabalho, Casa, Saúde ou Estudos):',
+      categoriaPadrao
+    );
+
+    const prioridadeInput = window.prompt(
+      'Prioridade (Alta, Média ou Baixa):',
+      'Média'
+    );
+
+    let categoriaFinal: 'Trabalho' | 'Casa' | 'Saúde' | 'Estudos' = categoriaPadrao;
+    const catLimpa = (categoriaInput || '').trim();
+    if (
+      catLimpa === 'Trabalho' ||
+      catLimpa === 'Casa' ||
+      catLimpa === 'Saúde' ||
+      catLimpa === 'Estudos'
+    ) {
+      categoriaFinal = catLimpa;
+    }
+
+    let prioridadeFinal: 'Alta' | 'Média' | 'Baixa' = 'Média';
+    const prioLimpa = (prioridadeInput || '').trim();
+    if (prioLimpa === 'Alta' || prioLimpa === 'Média' || prioLimpa === 'Baixa') {
+      prioridadeFinal = prioLimpa;
+    }
+
+    const novaTarefa: Tarefa = {
       id: Date.now(),
-      titulo,
-      categoria,
-      prioridade,
+      titulo: titulo.trim(),
+      categoria: categoriaFinal,
+      prioridade: prioridadeFinal,
       concluida: false,
-      foco: false
     };
 
-    this.tarefas.unshift(tarefa);
+    this.tarefas = [novaTarefa, ...this.tarefas];
+    this.filtro = categoriaFinal;
     this.salvarTarefas();
   }
 
-  remover(id: number) {
-    this.tarefas = this.tarefas.filter(t => t.id !== id);
-    this.salvarTarefas();
+  private salvarTarefas(): void {
+    try {
+      localStorage.setItem(this.storageKey, JSON.stringify(this.tarefas));
+    } catch {
+      // Ignora erro de armazenamento
+    }
   }
 
-  salvarTarefas() {
-    localStorage.setItem(
-      'minhas-tarefas',
-      JSON.stringify(this.tarefas)
-    );
-  }
-
-  carregarTarefas() {
-    const dados = localStorage.getItem('minhas-tarefas');
-
-    if (dados) {
-      try {
-        this.tarefas = JSON.parse(dados);
-      } catch {
-        console.error('Não foi possível carregar as tarefas.');
+  private carregarTarefas(): void {
+    try {
+      const salvo = localStorage.getItem(this.storageKey);
+      if (salvo) {
+        const parsed: unknown = JSON.parse(salvo);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          this.tarefas = parsed as Tarefa[];
+        }
       }
-    } else {
-      this.salvarTarefas();
+    } catch {
+      // Mantém exemplos iniciais
     }
   }
 }

@@ -1,133 +1,128 @@
+<header class="topo-app">
+  <div class="topo-linha">
+    <h1>Minhas Tarefas</h1>
+    <button
+      type="button"
+      class="btn-reset"
+      (click)="restaurarExemplos()">
+      Exemplos
+    </button>
+  </div>
+</header>
 
-<ion-header class="ion-no-border">
-  <ion-toolbar color="light">
-    <ion-title>Minhas Tarefas</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding">
+<main class="conteudo-app">
 
   <!-- Boas-vindas -->
   <div class="welcome">
     <h1>Bom dia! 👋</h1>
-    <p>Organize seu dia e alcance seus objetivos.</p>
+    <p>Toca numa categoria para ver as tarefas de exemplo.</p>
   </div>
 
   <!-- Progresso -->
-  <ion-card class="progress-card">
-    <ion-card-content>
-      <h2>Seu progresso</h2>
-      <h1>{{ progresso }}%</h1>
+  <section class="progress-card">
+    <h2>O teu progresso</h2>
+    <div class="porcentagem">{{ progresso }}%</div>
 
-      <ion-progress-bar
-        [value]="progresso / 100"
-        color="success">
-      </ion-progress-bar>
+    <div class="barra-fundo">
+      <div
+        class="barra-preenchida"
+        [style.width.%]="progresso">
+      </div>
+    </div>
 
-      <p>
-        {{ concluidas }} de {{ tarefas.length }}
-        tarefas concluídas
-      </p>
-    </ion-card-content>
-  </ion-card>
+    <p>
+      {{ concluidas }} de {{ tarefas.length }}
+      tarefas concluídas
+    </p>
+  </section>
 
   <!-- Categorias -->
   <h2>Categorias</h2>
 
   <div class="categories">
-    <ion-chip
+    <button
+      type="button"
+      class="chip-btn"
       *ngFor="let categoria of categorias"
-      [color]="filtro === categoria ? 'primary' : 'medium'"
+      [class.ativo]="filtro === categoria"
       (click)="filtrar(categoria)">
       {{ categoria }}
-    </ion-chip>
+    </button>
   </div>
 
   <!-- Foco principal -->
   <h2>⭐ Foco Principal</h2>
 
-  <ion-card>
-    <ion-card-content>
+  <section class="card-bloco">
+    <div class="linha-tarefa" *ngFor="let tarefa of tarefasFoco">
+      <input
+        type="checkbox"
+        [checked]="tarefa.concluida"
+        (change)="alternar(tarefa)" />
 
-      <ion-item *ngFor="let tarefa of tarefasFoco">
+      <div class="info-tarefa">
+        <div class="titulo-tarefa" [class.concluida]="tarefa.concluida">
+          {{ tarefa.titulo }}
+        </div>
+        <div class="subtitulo-tarefa">
+          {{ tarefa.categoria }} · {{ tarefa.prioridade }}
+        </div>
+      </div>
+    </div>
 
-        <ion-checkbox
-          slot="start"
-          [checked]="tarefa.concluida"
-          (ionChange)="alternar(tarefa)">
-        </ion-checkbox>
-
-        <ion-label>
-          <h2 [class.concluida]="tarefa.concluida">
-            {{ tarefa.titulo }}
-          </h2>
-        </ion-label>
-
-      </ion-item>
-
-      <p *ngIf="tarefasFoco.length === 0">
-        Nenhuma tarefa prioritária selecionada.
-      </p>
-
-    </ion-card-content>
-  </ion-card>
+    <p *ngIf="tarefasFoco.length === 0">
+      Nenhuma tarefa prioritária selecionada.
+    </p>
+  </section>
 
   <!-- Minhas atividades -->
   <div class="section-title">
-    <h2>Minhas atividades</h2>
+    <h2>{{ filtro === 'Todas' ? 'As minhas atividades' : 'Categoria: ' + filtro }}</h2>
+    <span class="contador-cat">{{ tarefasFiltradas.length }}</span>
   </div>
 
-  <ion-card *ngFor="let tarefa of tarefasFiltradas">
-
-    <ion-item>
-
-      <ion-checkbox
-        slot="start"
+  <section class="card-bloco" *ngFor="let tarefa of tarefasFiltradas">
+    <div class="linha-tarefa">
+      <input
+        type="checkbox"
         [checked]="tarefa.concluida"
-        (ionChange)="alternar(tarefa)">
-      </ion-checkbox>
+        (change)="alternar(tarefa)" />
 
-      <ion-label>
-        <h2 [class.concluida]="tarefa.concluida">
+      <div class="info-tarefa">
+        <div class="titulo-tarefa" [class.concluida]="tarefa.concluida">
           {{ tarefa.titulo }}
-        </h2>
-
-        <p>
+        </div>
+        <div class="subtitulo-tarefa">
           {{ tarefa.categoria }} · {{ tarefa.prioridade }}
-        </p>
-      </ion-label>
+        </div>
+      </div>
 
-      <ion-badge [color]="corPrioridade(tarefa.prioridade)">
+      <span class="badge-prio" [attr.data-prio]="corPrioridade(tarefa.prioridade)">
         {{ tarefa.prioridade }}
-      </ion-badge>
+      </span>
 
-      <ion-button
-        fill="clear"
-        color="danger"
-        (click)="remover(tarefa.id)">
-        <ion-icon name="trash-outline"></ion-icon>
-      </ion-button>
-
-    </ion-item>
-
-  </ion-card>
+      <button
+        type="button"
+        class="btn-remover"
+        (click)="remover(tarefa.id)"
+        title="Eliminar tarefa">
+        🗑️
+      </button>
+    </div>
+  </section>
 
   <!-- Estado vazio -->
   <div class="empty" *ngIf="tarefasFiltradas.length === 0">
-    <ion-icon name="clipboard-outline"></ion-icon>
-    <p>Nenhuma tarefa encontrada.</p>
+    <p>Nenhuma tarefa encontrada nesta categoria.</p>
   </div>
 
   <!-- Botão flutuante -->
-  <ion-fab
-    slot="fixed"
-    vertical="bottom"
-    horizontal="end">
+  <button
+    type="button"
+    class="fab-add"
+    (click)="abrirCadastro()"
+    title="Nova tarefa">
+    +
+  </button>
 
-    <ion-fab-button (click)="abrirCadastro()">
-      <ion-icon name="add-outline"></ion-icon>
-    </ion-fab-button>
-
-  </ion-fab>
-
-</ion-content>
+</main>
