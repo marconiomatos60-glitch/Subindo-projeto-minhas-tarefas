@@ -31,7 +31,7 @@ export class HomePage implements OnInit {
   tarefas: Tarefa[] = [
     {
       id: 101,
-      titulo: 'Enviar relatório semanal para a equipa',
+      titulo: 'Enviar relatório semanal para equipe',
       categoria: 'Trabalho',
       prioridade: 'Alta',
       concluida: false,
@@ -39,14 +39,14 @@ export class HomePage implements OnInit {
     },
     {
       id: 102,
-      titulo: 'Organizar atendimento e orçamentos',
+      titulo: 'Organizar atendimento e orçamento dos clientes',
       categoria: 'Trabalho',
       prioridade: 'Média',
       concluida: false,
     },
     {
       id: 201,
-      titulo: 'Pagar conta de água e luz',
+      titulo: 'Pagar conta de água e energia',
       categoria: 'Casa',
       prioridade: 'Alta',
       concluida: false,
@@ -54,7 +54,7 @@ export class HomePage implements OnInit {
     },
     {
       id: 202,
-      titulo: 'Fazer compras da semana e arrumar a casa',
+      titulo: 'Fazer compras da semana e limpar quintal',
       categoria: 'Casa',
       prioridade: 'Média',
       concluida: false,
@@ -69,7 +69,7 @@ export class HomePage implements OnInit {
     },
     {
       id: 302,
-      titulo: 'Caminhada leve de 30 minutos ao fim da tarde',
+      titulo: 'Caminhada leve de 30 minutos no fim da tarde',
       categoria: 'Saúde',
       prioridade: 'Baixa',
       concluida: false,
@@ -84,7 +84,7 @@ export class HomePage implements OnInit {
     },
     {
       id: 402,
-      titulo: 'Rever exercícios e anotações das aulas',
+      titulo: 'Revisar banco de dados e exercícios da turma',
       categoria: 'Estudos',
       prioridade: 'Média',
       concluida: false,
